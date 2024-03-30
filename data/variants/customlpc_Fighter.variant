@@ -1,0 +1,14 @@
+{
+	"quality":0.5,
+	"displayName":"Chip",
+	"hullId":"customlpc",
+	"variantId":"customlpc_Fighter",
+	"fluxVents":0,
+	"fluxCapacitors":0,
+	"hullMods":[spawncustomlpc], # array of strings
+	
+	# mode is either LINKED or ALTERNATING
+	# slot ids (WS ***) must match what's in the .ship file
+	"weaponGroups":[
+	],
+}
