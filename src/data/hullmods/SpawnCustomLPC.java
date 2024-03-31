@@ -1,8 +1,6 @@
 package data.hullmods;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CargoAPI;
-import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.combat.ShipAPI.HullSize;
 import com.fs.starfarer.api.combat.listeners.AdvanceableListener;
@@ -14,8 +12,6 @@ import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
-import com.fs.starfarer.api.impl.campaign.ids.HullMods;
-import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 import org.lwjgl.util.vector.Vector2f;
 
 @SuppressWarnings("unchecked")
@@ -44,9 +40,7 @@ public class SpawnCustomLPC extends BaseHullMod {
 	public static class ReplaceCustomLPC implements AdvanceableListener {
 		protected ShipAPI ship;
 		protected boolean fired = false;
-
 		protected ShipAPI customlpc = null;
-
 		protected ShipVariantAPI customlpccopy = null;
 
 		public ReplaceCustomLPC(ShipAPI ship) {
@@ -69,16 +63,17 @@ public class SpawnCustomLPC extends BaseHullMod {
 				}
 				ship.setAlphaMult(0);
 				ship.setCollisionClass(CollisionClass.NONE);
-				ship.setHoldFire(true);
+				ship.setShipAI(null);
 
 				if(customlpccopy != null){
 					engine.getFleetManager(ship.getOwner()).setSuppressDeploymentMessages(true);
-					customlpc = spawnShipOrWingDirectly(customlpccopy, FleetMemberType.SHIP, ship.getOwner(),ship.getCurrentCR(),ship.getCurrentCR()*5/customlpccopy.getHullSpec().getSuppliesPerMonth(),ship.getLocation(),ship.getFacing());
+					customlpc = spawnShipOrWingDirectly(customlpccopy, FleetMemberType.SHIP, ship.getOwner(),ship.getCurrentCR(),ship.getLocation(),ship.getFacing());
 					engine.getFleetManager(ship.getOwner()).setSuppressDeploymentMessages(false);
 					customlpc.setCollisionClass(CollisionClass.FIGHTER);
 					customlpc.setLaunchingShip(ship);
 					customlpc.setAnimatedLaunch();
 					customlpc.setDrone(true);
+					customlpc.setCaptain(ship.getCaptain());
 				}
 			} else {
 				if(customlpc != null){
@@ -88,6 +83,7 @@ public class SpawnCustomLPC extends BaseHullMod {
 					}
 				}
 				if(!ship.isAlive()){
+					customlpc.setHitpoints(0);
 					engine.removeEntity(customlpc);
 				}
 			}
@@ -100,36 +96,15 @@ public class SpawnCustomLPC extends BaseHullMod {
 		return false;
 	}
 
-	public static ShipAPI spawnShipOrWingDirectly(ShipVariantAPI variant, FleetMemberType type, int owner, float combatReadinessmax,float combatReadinesscurrent, Vector2f location, float facing) {
-
-		float dp = variant.getHullSpec().getSuppliesToRecover();
-		if(dp > 5)variant.addMod(HullMods.GLITCHED_SENSORS);
-		if(dp > 6)variant.addMod(HullMods.DEGRADED_ENGINES);
-		if(dp > 7)variant.addMod(HullMods.FAULTY_GRID);
-		if(dp > 8)variant.addMod(HullMods.COMP_STRUCTURE);
-		if(dp > 9)variant.addMod(HullMods.ILL_ADVISED);
-
-		/*
-
-		if(variant.getHullSize() == HullSize.FRIGATE){
-
-		}else if(variant.getHullSize() == HullSize.DESTROYER) {
-
-		}else if(variant.getHullSize() == HullSize.CRUISER){
-
-		}else if(variant.getHullSize() == HullSize.CAPITAL_SHIP){
-
-		}
-
-		 */
+	public static ShipAPI spawnShipOrWingDirectly(ShipVariantAPI variant, FleetMemberType type, int owner, float combatReadiness, Vector2f location, float facing) {
 
 		FleetMemberAPI member = Global.getFactory().createFleetMember(type, variant);
 		member.setOwner(owner);
 		member.getCrewComposition().addCrew(member.getNeededCrew());
 		ShipAPI ship = Global.getCombatEngine().getFleetManager(owner).spawnFleetMember(member, location, facing, 0f);
 
-		ship.setCRAtDeployment(combatReadinessmax);
-		ship.setCurrentCR(combatReadinesscurrent);
+		ship.setCRAtDeployment(combatReadiness);
+		ship.setCurrentCR(combatReadiness);
 		ship.setOwner(owner);
 		ship.getShipAI().forceCircumstanceEvaluation();
 		return ship;

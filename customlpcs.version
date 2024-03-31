@@ -1,16 +1,15 @@
 {
-  "masterVersionFile": "url goes here",
+  "masterVersionFile": "https://raw.githubusercontent.com/ymfah/CustomLPCs/main/customlpcs.version",
 
   "modName": "Custom LPCs",
 
   "modVersion":
     {
       "major": 1,
-      "minor": 0,
+      "minor": 1,
       "patch": 0
     },
 
   "modThreadId": 0,
-  "directDownloadURL": "https://github.com/MagicLibStarsector/MagicLib/releases/download/1.0.0/MagicLib-1.0.0.zip",
-  "changelogURL": "https://raw.githubusercontent.com/MagicLibStarsector/MagicLib/master/CHANGELOGS.md",
+  "changelogURL": "https://raw.githubusercontent.com/ymfah/CustomLPCs/main/README.md",
 }

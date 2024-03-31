@@ -1,2 +1,2 @@
 id,type,text1,text2,text3,text4,notes
-customlpc,SHIP,"A custom LPC that can be programmed to create any frigate. Requires a frigate with the ""Custom LPC"" hullmod.",Special,,,
+customlpc,SHIP,"A custom LPC that can be programmed to create any frigate. Requires a ship with the ""Custom LPC"" hullmod.",Special,,,
