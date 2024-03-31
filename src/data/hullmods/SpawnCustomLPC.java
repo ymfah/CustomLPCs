@@ -6,6 +6,8 @@ import com.fs.starfarer.api.combat.ShipAPI.HullSize;
 import com.fs.starfarer.api.combat.listeners.AdvanceableListener;
 
 import java.util.List;
+import java.util.Objects;
+
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.combat.BaseHullMod;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
@@ -48,10 +50,19 @@ public class SpawnCustomLPC extends BaseHullMod {
 		}
 
 		public void advance(float amount) {
+			ship.setAlphaMult(0);
+			ship.setCollisionClass(CollisionClass.NONE);
+			ship.setShipAI(null);
+			ship.setDrone(true);
+			ship.setHullSize(HullSize.FIGHTER);
+			ship.getLocation().set(1000000f, 0f);
+
+
 
 			CombatEngineAPI engine = Global.getCombatEngine();
 			CampaignFleetAPI fleet = Global.getSector().getPlayerFleet();
 			List<FleetMemberAPI> fleetList = fleet.getMembersWithFightersCopy();
+			ShipAPI mothership = ship.getWing().getSourceShip();
 			
 			if (!fired) {
 				fired = true;
@@ -64,13 +75,16 @@ public class SpawnCustomLPC extends BaseHullMod {
 				ship.setAlphaMult(0);
 				ship.setCollisionClass(CollisionClass.NONE);
 				ship.setShipAI(null);
+				ship.setDrone(true);
+				ship.setHullSize(HullSize.FIGHTER);
+				ship.getLocation().set(1000000f, 0f);
 
 				if(customlpccopy != null){
 					engine.getFleetManager(ship.getOwner()).setSuppressDeploymentMessages(true);
-					customlpc = spawnShipOrWingDirectly(customlpccopy, FleetMemberType.SHIP, ship.getOwner(),ship.getCurrentCR(),ship.getLocation(),ship.getFacing());
+					customlpc = spawnShipOrWingDirectly(customlpccopy, FleetMemberType.SHIP, ship.getOwner(),mothership.getCurrentCR(),mothership.getLocation(),mothership.getFacing());
 					engine.getFleetManager(ship.getOwner()).setSuppressDeploymentMessages(false);
 					customlpc.setCollisionClass(CollisionClass.FIGHTER);
-					customlpc.setLaunchingShip(ship);
+					customlpc.setLaunchingShip(mothership);
 					customlpc.setAnimatedLaunch();
 					customlpc.setDrone(true);
 					customlpc.setCaptain(ship.getCaptain());

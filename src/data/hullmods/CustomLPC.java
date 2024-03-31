@@ -1,7 +1,6 @@
 package data.hullmods;
 
-import com.fs.starfarer.api.combat.BaseHullMod;
-import com.fs.starfarer.api.combat.MutableShipStatsAPI;
+import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.combat.ShipAPI.HullSize;
 
 import java.util.List;
@@ -13,8 +12,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.CargoAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.fleet.FleetMemberType;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.impl.campaign.ids.Submarkets;
 
@@ -30,6 +29,9 @@ public class CustomLPC extends BaseHullMod {
 	
 	public void applyEffectsBeforeShipCreation(HullSize hullSize, MutableShipStatsAPI stats, String id) {
 
+		float dp = stats.getVariant().getHullSpec().getSuppliesToRecover();
+		//float dp = Global.getFactory().createFleetMember(FleetMemberType.SHIP, stats.getVariant()).getDeploymentPointsCost();
+
 		stats.getMaxCombatReadiness().modifyFlat(id, Math.round(CR_PERCENT * 100f) * 0.01f, "LPC designation");
 		stats.getCargoMod().modifyMult(id, 0f);
 		stats.getFuelMod().modifyMult(id, 0f);
@@ -40,9 +42,15 @@ public class CustomLPC extends BaseHullMod {
 
 		Global.getSettings().getDescription("customlpc", Description.Type.SHIP).setText1("A custom LPC that can be programmed to create any ship. " +
 				"Currently programmed to create a " +stats.getVariant().getFullDesignationWithHullName()+".");
-		Global.getSettings().getFighterWingSpec("customlpc").setOpCost(stats.getVariant().getHullSpec().getSuppliesToRecover()*5f);
-		Global.getSettings().getFighterWingSpec("customlpc").setRefitTime(stats.getVariant().getHullSpec().getSuppliesToRecover()*5f);
+		Global.getSettings().getFighterWingSpec("customlpc").setOpCost(dp*5f);
+		Global.getSettings().getFighterWingSpec("customlpc").setRefitTime(dp*5f);
 		Global.getSettings().getHullSpec("customlpc").setShipSystemId(stats.getVariant().getHullSpec().getShipSystemId());
+
+		ShipVariantAPI tempship = stats.getVariant().clone();
+		tempship.getHullMods().clear();
+		Global.getSettings().getVariant("customlpc_Fighter").getHullMods().clear();
+		Global.getSettings().getVariant("customlpc_Fighter").setHullSpecAPI(tempship.getHullSpec());
+
 	}
 	
 	public String getDescriptionParam(int index, HullSize hullSize) {
@@ -134,6 +142,7 @@ public class CustomLPC extends BaseHullMod {
 		if (isForModSpec || ship == null || ship.getMutableStats() == null) return;
 
 		float dp = ship.getHullSpec().getSuppliesToRecover();
+		//float dp = Global.getFactory().createFleetMember(FleetMemberType.SHIP, ship.getVariant()).getDeploymentPointsCost();
 
 		tooltip.addPara("This ship will cause the LPC to take %s ordnance points, and set the replacement time to %s seconds.", opad, h, new String[]{Misc.getRoundedValue((int)dp*5), Misc.getRoundedValue((int)dp*5)});
 		tooltip.addSectionHeading("Notes", Alignment.MID, opad);

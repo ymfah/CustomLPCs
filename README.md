@@ -4,7 +4,13 @@ Create your own fighter wings in-game!
 
 Adds 1 hullmod, and 1 fighter wing.
 
-Apply hullmod to ship, and the wing will become that ship!
+Apply hullmod to a ship, and the wing will become that ship!
+
+[Changes - v1.2.0] Prometheus (LP IED) Chip Edition™
+
+- Reworked visual
+
+	The LPC Icon, Name, Description, etc will change when you assign a ship.
 
 [Changes - v1.1.0] Onslaught Fighter Edition™
 
